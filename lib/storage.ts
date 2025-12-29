@@ -1,5 +1,12 @@
 import { kv } from '@vercel/kv';
 
+// Check if KV is configured
+function checkKVConfig() {
+  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+    throw new Error('Vercel KV is not configured. Please set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.');
+  }
+}
+
 export interface PasteData {
   content: string;
   createdAt: number;
@@ -64,6 +71,7 @@ export async function createPaste(
   maxViews: number | null,
   now: number
 ): Promise<{ id: string; url: string }> {
+  checkKVConfig();
   // Generate a unique ID using crypto for better randomness
   // Format: timestamp (base36) + random string (base36)
   const timestamp = now.toString(36);
@@ -107,6 +115,7 @@ export async function createPaste(
  * Get a paste by ID and decrement views if applicable
  */
 export async function getPaste(id: string, now: number): Promise<PasteData | null> {
+  checkKVConfig();
   const pasteKey = `${PASTE_PREFIX}${id}`;
   const paste = await kv.get<PasteData>(pasteKey);
 
@@ -153,6 +162,7 @@ export async function getPaste(id: string, now: number): Promise<PasteData | nul
  * Get a paste without decrementing views (for read-only operations)
  */
 export async function getPasteReadOnly(id: string, now: number): Promise<PasteData | null> {
+  checkKVConfig();
   const pasteKey = `${PASTE_PREFIX}${id}`;
   const paste = await kv.get<PasteData>(pasteKey);
 

@@ -41,9 +41,23 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error creating paste:', error);
+    
+    // Check if it's a KV configuration error
+    if (error instanceof Error && error.message.includes('KV_REST_API')) {
+      return NextResponse.json(
+        {
+          error: 'Storage not configured',
+          message: 'Vercel KV environment variables are missing. Please configure KV_REST_API_URL and KV_REST_API_TOKEN in your Vercel project settings.',
+          details: 'See VERCEL_SETUP.md for instructions',
+        },
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    
     return NextResponse.json(
       {
         error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
