@@ -23,7 +23,13 @@ export function middleware(request: NextRequest) {
       origin.includes('0.0.0.0')
     );
     
-    const corsOrigin = (origin && allowedOrigins.includes(origin)) || (isLocalhost ? origin : null) || '*';
+    // Ensure corsOrigin is always a string
+    let corsOrigin: string = '*';
+    if (origin && allowedOrigins.includes(origin)) {
+      corsOrigin = origin;
+    } else if (isLocalhost && origin) {
+      corsOrigin = origin;
+    }
     
     // Handle preflight requests
     if (request.method === 'OPTIONS') {
