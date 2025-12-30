@@ -10,6 +10,7 @@ const nextConfig = {
   },
   eslint: {
     // Ignore ESLint during builds to avoid config issues
+    // Set to false if you want to enforce linting
     ignoreDuringBuilds: true,
   },
 }
