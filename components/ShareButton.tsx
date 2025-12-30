@@ -227,3 +227,5 @@ export function ShareButton({ url, title = 'Check out this paste', text, classNa
     </div>
   );
 }
+
+export default ShareButton;
