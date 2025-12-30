@@ -8,6 +8,8 @@
     "dev:api": "next dev",
     "dev:all": "concurrently \"npm run dev:api\" \"npm run dev\"",
     "build": "vite build",
+    "build:api": "next build",
+    "build:all": "npm run build:api && npm run build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx"
   },
