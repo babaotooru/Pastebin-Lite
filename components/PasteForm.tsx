@@ -17,7 +17,9 @@ export function PasteForm() {
 
   // Check for timeCompleted query parameter
   useEffect(() => {
-    const timeCompleted = searchParams.get('timeCompleted');
+    // TypeScript: useSearchParams() always returns ReadonlyURLSearchParams in client components (never null)
+    // Using non-null assertion since we're in a client component
+    const timeCompleted = searchParams!.get('timeCompleted');
     if (timeCompleted === 'true') {
       showToast('⏰ Time Completed - The paste has expired', 'error', 5000);
       // Clean up URL
