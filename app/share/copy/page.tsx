@@ -13,7 +13,9 @@ export default function CopyPage() {
   const [copied, setCopied] = useState(false);
   const { toasts, showToast, removeToast } = useToast();
   
-  const url = searchParams?.get('url') || null;
+  // TypeScript: useSearchParams() always returns ReadonlyURLSearchParams in client components (never null)
+  // Using non-null assertion since we're in a client component
+  const url = searchParams!.get('url');
 
   useEffect(() => {
     if (!url) {
