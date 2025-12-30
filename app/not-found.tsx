@@ -26,7 +26,7 @@ export default function NotFound() {
             fontSize: '1.125rem',
             marginBottom: '1.5rem'
           }}>
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
         </div>
 
