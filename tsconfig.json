@@ -22,8 +22,8 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "src", "dist", "*.config.js", "*.config.cjs"]
+  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "components/**/*.ts", "components/**/*.tsx", "hooks/**/*.ts", "hooks/**/*.tsx", "lib/**/*.ts", "middleware.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "src", "dist", "*.config.js", "*.config.cjs", "pages"]
 }
 
 
