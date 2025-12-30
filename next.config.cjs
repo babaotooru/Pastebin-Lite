@@ -5,6 +5,4 @@ const nextConfig = {
   // Next.js will still process the app directory but we'll use Vite for pages
 }
 
-export default nextConfig
-
-
+module.exports = nextConfig
