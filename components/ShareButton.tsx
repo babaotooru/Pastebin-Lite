@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
-interface ShareButtonProps {
+export interface ShareButtonProps {
   url: string;
   title?: string;
   text?: string;
