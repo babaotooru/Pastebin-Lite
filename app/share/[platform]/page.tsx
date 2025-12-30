@@ -33,9 +33,9 @@ export default function SharePage() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   
   const platform = (params?.platform as string)?.toLowerCase();
-  const url = searchParams.get('url');
-  const text = searchParams.get('text') || 'Check out this paste';
-  const title = searchParams.get('title') || 'Check out this paste';
+  const url = searchParams?.get('url') || null;
+  const text = searchParams?.get('text') || 'Check out this paste';
+  const title = searchParams?.get('title') || 'Check out this paste';
 
   const config = platformConfig[platform];
 

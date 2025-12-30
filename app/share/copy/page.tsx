@@ -13,7 +13,7 @@ export default function CopyPage() {
   const [copied, setCopied] = useState(false);
   const { toasts, showToast, removeToast } = useToast();
   
-  const url = searchParams.get('url');
+  const url = searchParams?.get('url') || null;
 
   useEffect(() => {
     if (!url) {
