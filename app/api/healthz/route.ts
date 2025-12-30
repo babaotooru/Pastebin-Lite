@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkStorageHealth } from '@/lib/storage';
+import { checkStorageHealth } from '@/lib/redis';
 
 export async function GET() {
   try {

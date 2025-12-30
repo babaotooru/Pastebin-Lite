@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useRealtimePaste } from '@/hooks/useRealtimePaste';
 import { useToast } from '@/hooks/useToast';
-import { ToastContainer } from './Toast';
-import { CopyButton } from './CopyButton';
-import { ShareButton } from './ShareButton';
-import { ExpiresDate } from './ExpiresDate';
-import { BackButton } from './BackButton';
-import { ExpiredMessage } from './ExpiredMessage';
+import { ToastContainer } from '@/components/Toast';
+import { CopyButton } from '@/components/CopyButton';
+import { ShareButton } from '@/components/ShareButton';
+import { ExpiresDate } from '@/components/ExpiresDate';
+import { BackButton } from '@/components/BackButton';
+import { ExpiredMessage } from '@/components/ExpiredMessage';
 
-interface PasteViewClientProps {
+interface PasteViewerProps {
   pasteId: string;
   content: string;
   contentHtml: string;
@@ -18,16 +19,18 @@ interface PasteViewClientProps {
   expiresAt: number | null;
 }
 
-export function PasteViewClient({
+export function PasteViewer({
   pasteId,
   content,
   contentHtml: initialContentHtml,
   remainingViews: initialRemainingViews,
   expiresAt: initialExpiresAt,
-}: PasteViewClientProps) {
+}: PasteViewerProps) {
+  const router = useRouter();
   const { stats } = useRealtimePaste(pasteId, true);
   const { toasts, showToast, removeToast } = useToast();
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
+  const hasRedirected = useRef(false);
 
   const remainingViews = stats?.remaining_views ?? initialRemainingViews;
   const expiresAt = stats?.expires_at 
@@ -53,8 +56,18 @@ export function PasteViewClient({
       const diff = expiresAt - now;
 
       if (diff <= 0) {
-        setTimeRemaining('Expired');
+        setTimeRemaining('Time Completed');
         setIsExpired(true);
+        // Redirect to home page with message
+        if (!hasRedirected.current) {
+          hasRedirected.current = true;
+          // Use window.location for proper redirect (full page reload)
+          setTimeout(() => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/?timeCompleted=true';
+            }
+          }, 500); // Small delay to show "Time Completed" briefly
+        }
         return;
       }
       
@@ -76,7 +89,9 @@ export function PasteViewClient({
       }
     };
 
+    // Initial update immediately
     updateTimeRemaining();
+    // Update every second
     const interval = setInterval(updateTimeRemaining, 1000);
 
     return () => clearInterval(interval);
@@ -99,8 +114,8 @@ export function PasteViewClient({
     return <ExpiredMessage pasteId={pasteId} />;
   }
 
-  // Check if expired
-  if (isExpired) {
+  // Check if expired - show expired message
+  if (isExpired && timeRemaining === 'Time Completed') {
     return <ExpiredMessage pasteId={pasteId} />;
   }
 
@@ -124,6 +139,34 @@ export function PasteViewClient({
 
   return (
     <>
+      {/* Countdown Timer - Top Right */}
+      {expiresAt && timeRemaining && timeRemaining !== 'Time Completed' && !isExpired && (
+        <div className="countdown-timer">
+          <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>⏱️</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ 
+              fontSize: '0.75rem', 
+              color: 'var(--text-secondary)',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              lineHeight: 1.2
+            }}>
+              Time Remaining
+            </div>
+            <div style={{ 
+              fontSize: '1rem', 
+              fontWeight: 700,
+              color: 'var(--primary)',
+              fontFamily: 'monospace',
+              lineHeight: 1.4,
+              wordBreak: 'break-word'
+            }}>
+              {timeRemaining}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container">
         <BackButton />
         <div className="card">
@@ -141,7 +184,7 @@ export function PasteViewClient({
                 />
               </>
             )}
-            <a href="/" className="btn btn-secondary">
+            <a href="/" className="btn btn-secondary" style={{ textDecoration: 'none' }}>
               ← Create New
             </a>
           </div>
@@ -155,14 +198,7 @@ export function PasteViewClient({
               </span>
             </div>
           )}
-          {expiresAt && timeRemaining && (
-            <div className="paste-meta-item">
-              <span className={`badge ${timeRemaining === 'Expired' ? 'badge-warning' : 'badge-info'}`}>
-                ⏱️ {timeRemaining}
-              </span>
-            </div>
-          )}
-          {expiresAt && (
+          {expiresAt && timeRemaining !== 'Time Completed' && (
             <ExpiresDate timestamp={expiresAt} />
           )}
         </div>

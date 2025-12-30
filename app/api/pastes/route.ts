@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPaste, getCurrentTime } from '@/lib/storage';
+import { createPaste } from '@/lib/paste';
+import { getCurrentTime } from '@/lib/time';
 import { validateCreatePasteRequest } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {

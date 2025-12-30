@@ -1,11 +1,5 @@
-import { kv } from '@vercel/kv';
-
-// Check if KV is configured
-function checkKVConfig() {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    throw new Error('Vercel KV is not configured. Please set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.');
-  }
-}
+import { getKV } from './redis';
+import { getCurrentTime } from './time';
 
 export interface PasteData {
   content: string;
@@ -17,19 +11,6 @@ export interface PasteData {
 
 const PASTE_PREFIX = 'paste:';
 const PASTE_META_PREFIX = 'paste:meta:';
-
-/**
- * Get the current time, respecting TEST_MODE if enabled
- */
-export function getCurrentTime(headers?: Headers): number {
-  if (process.env.TEST_MODE === '1' && headers) {
-    const testNow = headers.get('x-test-now-ms');
-    if (testNow) {
-      return parseInt(testNow, 10);
-    }
-  }
-  return Date.now();
-}
 
 /**
  * Check if a paste has expired based on TTL
@@ -71,7 +52,8 @@ export async function createPaste(
   maxViews: number | null,
   now: number
 ): Promise<{ id: string; url: string }> {
-  checkKVConfig();
+  const kv = getKV();
+  
   // Generate a unique ID using crypto for better randomness
   // Format: timestamp (base36) + random string (base36)
   const timestamp = now.toString(36);
@@ -115,7 +97,7 @@ export async function createPaste(
  * Get a paste by ID and decrement views if applicable
  */
 export async function getPaste(id: string, now: number): Promise<PasteData | null> {
-  checkKVConfig();
+  const kv = getKV();
   const pasteKey = `${PASTE_PREFIX}${id}`;
   const paste = await kv.get<PasteData>(pasteKey);
 
@@ -162,7 +144,7 @@ export async function getPaste(id: string, now: number): Promise<PasteData | nul
  * Get a paste without decrementing views (for read-only operations)
  */
 export async function getPasteReadOnly(id: string, now: number): Promise<PasteData | null> {
-  checkKVConfig();
+  const kv = getKV();
   const pasteKey = `${PASTE_PREFIX}${id}`;
   const paste = await kv.get<PasteData>(pasteKey);
 
@@ -184,16 +166,26 @@ export async function getPasteReadOnly(id: string, now: number): Promise<PasteDa
 }
 
 /**
- * Check if storage is available
+ * Escape HTML to prevent XSS attacks
  */
-export async function checkStorageHealth(): Promise<boolean> {
-  try {
-    // Try a simple operation to check if KV is available
-    await kv.get('health:check');
-    return true;
-  } catch (error) {
-    // If KV is not configured, return false
-    return false;
-  }
+export function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
+/**
+ * Format content for display (preserve line breaks)
+ */
+export function formatContentForDisplay(content: string): string {
+  return escapeHtml(content)
+    .split('\n')
+    .map((line) => `<span class="line">${line || ' '}</span>`)
+    .join('\n');
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPasteReadOnly, getCurrentTime, getExpiresAt } from '@/lib/storage';
+import { getPasteReadOnly, getExpiresAt } from '@/lib/paste';
+import { getCurrentTime } from '@/lib/time';
 
 /**
  * Get paste stats without decrementing views (for real-time updates)
@@ -48,4 +49,5 @@ export async function GET(
     );
   }
 }
+
 

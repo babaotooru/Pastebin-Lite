@@ -34,7 +34,7 @@ export function ExpiredMessage({ pasteId }: ExpiredMessageProps) {
             color: 'var(--error)',
             marginBottom: '0.5rem'
           }}>
-            Link Expired
+            ⏰ Time Completed
           </h1>
           <p style={{ 
             color: 'var(--text-secondary)', 

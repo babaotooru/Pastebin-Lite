@@ -124,3 +124,4 @@ The application now includes:
 
 Just run `npm run dev` and enjoy the enhanced experience!
 
+

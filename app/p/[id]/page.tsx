@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
-import { getPaste, getCurrentTime, getExpiresAt } from '@/lib/storage';
-import { formatContentForDisplay } from '@/lib/utils';
+import { getPaste, getExpiresAt } from '@/lib/paste';
+import { formatContentForDisplay } from '@/lib/paste';
+import { getCurrentTime } from '@/lib/time';
 import { headers } from 'next/headers';
-import { PasteViewClient } from '@/components/PasteViewClient';
+import { PasteViewer } from '@/components/PasteViewer';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,7 @@ export default async function ViewPastePage({
   const contentHtml = formatContentForDisplay(paste.content);
 
   return (
-    <PasteViewClient
+    <PasteViewer
       pasteId={resolvedParams.id}
       content={paste.content}
       contentHtml={contentHtml}

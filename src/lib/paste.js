@@ -1,8 +1,8 @@
 /**
  * Escape HTML to prevent XSS attacks
  */
-export function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
+export function escapeHtml(text) {
+  const map = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -15,7 +15,7 @@ export function escapeHtml(text: string): string {
 /**
  * Format content for display (preserve line breaks)
  */
-export function formatContentForDisplay(content: string): string {
+export function formatContentForDisplay(content) {
   return escapeHtml(content)
     .split('\n')
     .map((line) => `<span class="line">${line || ' '}</span>`)

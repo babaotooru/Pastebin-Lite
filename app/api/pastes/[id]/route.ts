@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPaste, getCurrentTime, getExpiresAt } from '@/lib/storage';
+import { getPaste, getExpiresAt } from '@/lib/paste';
+import { getCurrentTime } from '@/lib/time';
 
 export async function GET(
   request: NextRequest,
